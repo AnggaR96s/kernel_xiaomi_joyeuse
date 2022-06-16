@@ -884,7 +884,7 @@ void psi_memstall_enter(unsigned long *flags)
 	 */
 	rq = this_rq_lock_irq(&rf);
 
-	current->in_memstall = 1;
+	current->flags |= PF_MEMSTALL;
 	psi_task_change(current, 0, TSK_MEMSTALL);
 
 	rq_unlock_irq(rq, &rf);
@@ -913,7 +913,7 @@ void psi_memstall_leave(unsigned long *flags)
 	 */
 	rq = this_rq_lock_irq(&rf);
 
-	current->in_memstall = 0;
+	current->flags &= ~PF_MEMSTALL;
 	psi_task_change(current, TSK_MEMSTALL, 0);
 
 	rq_unlock_irq(rq, &rf);
@@ -979,7 +979,7 @@ void cgroup_move_task(struct task_struct *task, struct css_set *to)
 	} else if (task->in_iowait)
 		task_flags = TSK_IOWAIT;
 
-	if (task->in_memstall)
+	if (task->flags & PF_MEMSTALL)
 		task_flags |= TSK_MEMSTALL;
 
 	if (task_flags)
