@@ -139,8 +139,14 @@ static inline void psi_task_tick(struct rq *rq)
 	if (static_branch_likely(&psi_disabled))
 		return;
 
-	if (unlikely(rq->curr->flags & PF_MEMSTALL))
-		psi_memstall_tick(rq->curr, cpu_of(rq));
+	/*
+	 * Clear the TSK_ONCPU state if the task was preempted. If
+	 * it's a voluntary sleep, dequeue will have taken care of it.
+	 */
+	if (!sleep)
+		psi_task_change(prev, TSK_ONCPU, 0);
+
+	psi_task_change(next, 0, TSK_ONCPU);
 }
 
 static inline void psi_task_tick(struct rq *rq)
