@@ -793,8 +793,25 @@ void psi_task_change(struct task_struct *task, int clear, int set)
 		if (state_mask & group->poll_states)
 			psi_schedule_poll_work(group, 1);
 
-		if (wake_clock && !delayed_work_pending(&group->avgs_work))
-			schedule_delayed_work(&group->avgs_work, PSI_FREQ);
+		psi_flags_change(next, 0, TSK_ONCPU);
+		/*
+		 * When switching between tasks that have an identical
+		 * runtime state, the cgroup that contains both tasks
+		 * runtime state, the cgroup that contains both tasks
+		 * we reach the first common ancestor. Iterate @next's
+		 * ancestors only until we encounter @prev's ONCPU.
+		 */
+		identical_state = prev->psi_flags == next->psi_flags;
+		iter = NULL;
+		while ((group = iterate_groups(next, &iter))) {
+			if (identical_state &&
+			    per_cpu_ptr(group->pcpu, cpu)->tasks[NR_ONCPU]) {
+				common = group;
+				break;
+			}
+
+			psi_group_change(group, cpu, 0, TSK_ONCPU, now, true);
+		}
 	}
 }
 
