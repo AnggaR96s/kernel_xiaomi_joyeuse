@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.14.290 Kernel Configuration
+# Linux/arm64 4.14.294 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -5456,7 +5456,6 @@ CONFIG_FRAME_WARN=2048
 # CONFIG_PAGE_OWNER is not set
 # CONFIG_DEBUG_FS is not set
 # CONFIG_HEADERS_CHECK is not set
-CONFIG_OPTIMIZE_INLINING=y
 # CONFIG_DEBUG_SECTION_MISMATCH is not set
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 CONFIG_ARCH_WANT_FRAME_POINTERS=y
