@@ -125,7 +125,7 @@ static unsigned int __init parse_logical_bootcpu(u64 dt_phys)
 	 * attempt at mapping the FDT in setup_machine()
 	 */
 	early_fixmap_init();
-	fdt = __fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
+	fdt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
 	if (!fdt)
 		return 0;
 
@@ -279,7 +279,7 @@ static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
 	int size;
 	void *dt_virt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
-	const char *name;
+	const char *machine_name;
 
 	if (dt_virt)
 		memblock_reserve(dt_phys, size);
@@ -298,8 +298,8 @@ static void __init setup_machine_fdt(phys_addr_t dt_phys)
 	/* Early fixups are done, map the FDT as read-only now */
 	fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
 
-	name = of_flat_dt_get_machine_name();
-	if (!name)
+	machine_name = arch_read_machine_name();
+	if (!machine_name)
 		return;
 
 	pr_info("Machine: %s\n", machine_name);
