@@ -221,6 +221,8 @@ static int bfq_bio_sync(struct bio *bio)
  */
 static void bfq_schedule_dispatch(struct bfq_data *bfqd)
 {
+	lockdep_assert_held(&bfqd->lock);
+
 	if (bfqd->queued != 0) {
 		bfq_log(bfqd, "schedule dispatch");
 		kblockd_schedule_work(&bfqd->unplug_work);
